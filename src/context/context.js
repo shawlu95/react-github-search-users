@@ -15,8 +15,28 @@ const GithubProvider = ({ children }) => {
   const [repos, setRepose] = useState(mockRepos);
   const [followers, setFollowers] = useState(mockFollowers);
   const [requests, setRequests] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState({ show: false, msg: '' });
+  const searchGithubUser = async (user) => {
+    if (!user) {
+      toggleError(true, 'Please enter user ID');
+    }
+
+    // turn off error
+    toggleError();
+
+    // weird way to call axios GET
+    const res = await axios(`${rootUrl}/users/${user}`).catch((err) =>
+      console.log(err)
+    );
+
+    if (res) {
+      setGithubUser(res.data);
+    } else {
+      toggleError(true, 'User not found');
+    }
+    console.log('searching', user);
+  };
 
   useEffect(() => {
     const checkRequests = async () => {
@@ -39,7 +59,14 @@ const GithubProvider = ({ children }) => {
 
   return (
     <GithubContext.Provider
-      value={{ githubUser, repos, followers, requests, error }}
+      value={{
+        githubUser,
+        repos,
+        followers,
+        requests,
+        error,
+        searchGithubUser,
+      }}
     >
       {children}
     </GithubContext.Provider>
