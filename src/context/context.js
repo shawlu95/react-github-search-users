@@ -12,10 +12,10 @@ const GithubContext = React.createContext();
 // wrap whole application (children) with globally accessible value
 const GithubProvider = ({ children }) => {
   const [githubUser, setGithubUser] = useState(mockUser);
-  const [repos, setRepose] = useState(mockRepos);
+  const [repos, setRepos] = useState(mockRepos);
   const [followers, setFollowers] = useState(mockFollowers);
   const [requests, setRequests] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState({ show: false, msg: '' });
   const searchGithubUser = async (user) => {
     if (!user) {
@@ -25,6 +25,8 @@ const GithubProvider = ({ children }) => {
     // turn off error
     toggleError();
 
+    setLoading(true);
+
     // weird way to call axios GET
     const res = await axios(`${rootUrl}/users/${user}`).catch((err) =>
       console.log(err)
@@ -32,24 +34,34 @@ const GithubProvider = ({ children }) => {
 
     if (res) {
       setGithubUser(res.data);
+      const { login, followers_url } = res.data;
+      axios(`${rootUrl}/users/${login}/repos?per_page=100`).then((res) =>
+        setRepos(res.data)
+      );
+      axios(`${followers_url}?per_page=100`).then((res) =>
+        setFollowers(res.data)
+      );
     } else {
       toggleError(true, 'User not found');
     }
-    console.log('searching', user);
+
+    checkRequests();
+    setLoading(false);
+  };
+
+  const checkRequests = async () => {
+    const {
+      data: {
+        rate: { remaining },
+      },
+    } = await axios.get(`${rootUrl}/rate_limit`);
+    setRequests(remaining);
+    if (remaining === 0) {
+      toggleError(true, 'Exceeded hourly rate!');
+    }
   };
 
   useEffect(() => {
-    const checkRequests = async () => {
-      const {
-        data: {
-          rate: { remaining },
-        },
-      } = await axios.get(`${rootUrl}/rate_limit`);
-      setRequests(remaining);
-      if (remaining === 0) {
-        toggleError(true, 'Exceeded hourly rate!');
-      }
-    };
     checkRequests();
   }, []);
 
@@ -64,6 +76,7 @@ const GithubProvider = ({ children }) => {
         repos,
         followers,
         requests,
+        loading,
         error,
         searchGithubUser,
       }}
