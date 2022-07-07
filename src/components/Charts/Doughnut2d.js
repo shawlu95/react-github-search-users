@@ -8,7 +8,7 @@ import FusionCharts from 'fusioncharts';
 import Chart from 'fusioncharts/fusioncharts.charts';
 
 // Include the theme as fusion
-import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.candy';
+import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.gammel';
 
 // Adding the chart and theme as dependency to the core fusioncharts
 ReactFC.fcRoot(FusionCharts, Chart, FusionTheme);
@@ -26,7 +26,7 @@ const ChartComponent = ({ data }) => {
         theme: 'fusion',
         doughnutRadius: '45%',
         showPercentValues: 0,
-        theme: 'candy',
+        theme: 'gammel',
       },
       // Chart Data
       data,
