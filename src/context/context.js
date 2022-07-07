@@ -35,12 +35,32 @@ const GithubProvider = ({ children }) => {
     if (res) {
       setGithubUser(res.data);
       const { login, followers_url } = res.data;
-      axios(`${rootUrl}/users/${login}/repos?per_page=100`).then((res) =>
-        setRepos(res.data)
-      );
-      axios(`${followers_url}?per_page=100`).then((res) =>
-        setFollowers(res.data)
-      );
+
+      // refresh results at the same time
+      await Promise.allSettled([
+        axios(`${rootUrl}/users/${user}`),
+        axios(`${followers_url}?per_page=100`),
+      ])
+        .then((res) => {
+          const [repos, followers] = res;
+
+          if (repos.status !== 'fulfilled') {
+            toggleError(true, `Failed to read repos: ${repos.status}`);
+          }
+
+          if (followers.status !== 'fulfilled') {
+            toggleError(true, `Failed to read followers: ${followers.status}`);
+          }
+
+          if (repos.status === 'fulfilled') {
+            setRepos(repos.value.data);
+          }
+
+          if (followers.status === 'fulfilled') {
+            setFollowers(followers.value.data);
+          }
+        })
+        .catch((err) => console.log(err));
     } else {
       toggleError(true, 'User not found');
     }
