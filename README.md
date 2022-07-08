@@ -94,7 +94,7 @@ version used - "react-router-dom": "^5.2.0",
 
 In order for routing to work on netlify, redirects was added to the public folder
 
-- \_redirects file in public
+- [\_redirects](./public/_redirects) file in public
 
 ```
 

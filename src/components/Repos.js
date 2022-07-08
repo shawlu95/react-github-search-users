@@ -1,27 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { GithubContext } from '../context/context';
-import { ExampleChart, Pie3D, Column3D, Bar3D, Doughnut2D } from './Charts';
-
-// STEP 2 - Chart Data
-const data = [
-  {
-    label: 'HTML',
-    value: '290',
-  },
-  {
-    label: 'CSS',
-    value: '260',
-  },
-  {
-    label: 'JS',
-    value: '180',
-  },
-  {
-    label: 'TypeScript',
-    value: '140',
-  },
-];
+import { Pie3D, Column3D, Bar3D, Doughnut2D } from './Charts';
 
 const Repos = () => {
   const { repos } = React.useContext(GithubContext);

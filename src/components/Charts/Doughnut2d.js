@@ -23,7 +23,6 @@ const ChartComponent = ({ data }) => {
     dataSource: {
       chart: {
         caption: 'Stars per Language',
-        theme: 'fusion',
         doughnutRadius: '45%',
         showPercentValues: 0,
         theme: 'gammel',

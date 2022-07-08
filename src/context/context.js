@@ -38,7 +38,7 @@ const GithubProvider = ({ children }) => {
 
       // refresh results at the same time
       await Promise.allSettled([
-        axios(`${rootUrl}/users/${user}`),
+        axios(`${rootUrl}/users/${login}/repos?per_page=100`),
         axios(`${followers_url}?per_page=100`),
       ])
         .then((res) => {
@@ -65,25 +65,23 @@ const GithubProvider = ({ children }) => {
       toggleError(true, 'User not found');
     }
 
-    checkRequests();
     setLoading(false);
   };
 
-  const checkRequests = async () => {
-    const {
-      data: {
-        rate: { remaining },
-      },
-    } = await axios.get(`${rootUrl}/rate_limit`);
-    setRequests(remaining);
-    if (remaining === 0) {
-      toggleError(true, 'Exceeded hourly rate!');
-    }
-  };
-
   useEffect(() => {
+    const checkRequests = async () => {
+      const {
+        data: {
+          rate: { remaining },
+        },
+      } = await axios.get(`${rootUrl}/rate_limit`);
+      setRequests(remaining);
+      if (remaining === 0) {
+        toggleError(true, 'Exceeded hourly rate!');
+      }
+    };
     checkRequests();
-  }, []);
+  }, [followers, repos]);
 
   function toggleError(show = false, msg = '') {
     setError({ show, msg });
